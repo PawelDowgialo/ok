@@ -3,6 +3,8 @@ import Card from '../UI/Card';
 import classes from './AddUser.module.css' ;
 import Button from '../UI/Button';
 import ErrorModal from '../UI/ErrorModal' ;
+import { useEffect } from 'react';
+
 function AddUser() {
 
     const [name, setName] = useState('')
@@ -10,6 +12,41 @@ function AddUser() {
     const [email, setEmail] = useState('')
     const [age, setAge] = useState('')
     const [errorModal, setErrorModal] = useState(null)
+
+    async function sendDataHandler(event){
+        event.preventDefault()
+        const res = await fetch('https://login-92625-default-rtdb.firebaseio.com/pierwszekroki.json', 
+          {
+            method:'POST',
+            body: JSON.stringify(name, password, email, age),
+            headers:{
+              'Content-type':'aplication.json'
+            }
+          }
+        )
+    
+      const data = await res.json()
+        setName('')
+        setPassword('')
+        setEmail('')
+        setAge('')
+    
+    const getDataHandler = useCallback(async()=>{
+        const res = await fetch('https://login-92625-default-rtdb.firebaseio.com/pierwszekroki.json')
+        const data = await res.json()
+        
+        const loadedData = []
+        for (const key in data){
+            loadedData.push({
+            moj: data[key]
+          })
+        }
+        console.log(loadedData)
+      })
+    
+      useEffect(()=>{
+        getDataHandler()
+      }, [])
 
     function namedChangeHandler(event){
         setName(event.target.value)
@@ -37,11 +74,13 @@ function AddUser() {
 
         setAge('');
         setName('');
+        setPassword('');
+        setEmail('');
     }
    const errorHandler = () => {
     setErrorModal(null);
    }
-   ;
+
     return (
     <>
         {errorModal && <ErrorModal title={errorModal.title} 
@@ -77,7 +116,7 @@ function AddUser() {
         </>
     );
     
-   
+    }
 }
 
-export default AddUser ;
+export default AddUser
