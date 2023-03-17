@@ -4,6 +4,8 @@ import classes from './AddUser.module.css' ;
 import Button from '../UI/Button';
 import ErrorModal from '../UI/ErrorModal' ;
 import { useEffect } from 'react';
+import { useCallback } from 'react';
+
 
 function AddUser() {
 
@@ -12,41 +14,6 @@ function AddUser() {
     const [email, setEmail] = useState('')
     const [age, setAge] = useState('')
     const [errorModal, setErrorModal] = useState(null)
-
-    async function sendDataHandler(event){
-        event.preventDefault()
-        const res = await fetch('https://login-92625-default-rtdb.firebaseio.com/pierwszekroki.json', 
-          {
-            method:'POST',
-            body: JSON.stringify(name, password, email, age),
-            headers:{
-              'Content-type':'aplication.json'
-            }
-          }
-        )
-    
-      const data = await res.json()
-        setName('')
-        setPassword('')
-        setEmail('')
-        setAge('')
-    
-    const getDataHandler = useCallback(async()=>{
-        const res = await fetch('https://login-92625-default-rtdb.firebaseio.com/pierwszekroki.json')
-        const data = await res.json()
-        
-        const loadedData = []
-        for (const key in data){
-            loadedData.push({
-            moj: data[key]
-          })
-        }
-        console.log(loadedData)
-      })
-    
-      useEffect(()=>{
-        getDataHandler()
-      }, [])
 
     function namedChangeHandler(event){
         setName(event.target.value)
@@ -62,14 +29,55 @@ function AddUser() {
         console.log(age)
     }
 
-    function addUserHandler(event){
+    const getDataHandler = useCallback(async()=>{
+      const res = await fetch('https://login-92625-default-rtdb.firebaseio.com/pierwszekroki.json')
+      const data = await res.json()
+      
+      const loadedData = []
+      for (const key in data){
+          loadedData.push({
+          moj: data[key]
+        })
+      }
+      console.log(loadedData)
+    })
+  
+    useEffect(()=>{
+      getDataHandler()
+    }, [])
+
+
+    async function addUserHandler(event){
         event.preventDefault();
         
+        const res = await fetch('https://login-92625-default-rtdb.firebaseio.com/logowanie.json', 
+          {
+            method:'POST',
+            body: JSON.stringify({imie:name, haslo:password, email:email, wiek:age}),
+            headers:{
+              'Content-type':'aplication/json'
+            }
+          }
+        )
+
         if(+age < 1){
             setErrorModal({
                 title:"Błędny wiek",
                 msg:"Wiek musi być > 0"
             })
+        }
+        else if(name.length <=2){
+          setErrorModal({
+            title:"Błędna nazwa",
+            msg:"Musi być więcej niż 2 znaki!"
+        })
+        }
+          
+        else if (password.length <=8){
+          setErrorModal({
+            title:"Błędne hasło",
+            msg:"Hasło powinno mieć przynajmniej 9 znaków!"
+        })
         }
 
         setAge('');
@@ -117,6 +125,6 @@ function AddUser() {
     );
     
     }
-}
+
 
 export default AddUser
