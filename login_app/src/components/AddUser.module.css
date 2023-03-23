@@ -18,3 +18,10 @@
     padding: 0.15rem;
     margin-bottom: 0.5rem;
 }
+
+.left{
+    background-color: red;
+    width: 100px;
+    height: 100px;
+    float: left;
+}

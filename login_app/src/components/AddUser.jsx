@@ -120,6 +120,7 @@ function AddUser() {
 
             <Button myType="submit"> Add user </Button>
         </form>
+        <div className={classes.left}>oijsofi</div>
         </Card>
         </>
     );
