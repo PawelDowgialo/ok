@@ -20,8 +20,12 @@
 }
 
 .left{
+    width: 100%;
     background-color: red;
-    width: 100px;
-    height: 100px;
-    float: left;
+}
+
+main{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 }

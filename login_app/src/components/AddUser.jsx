@@ -8,7 +8,7 @@ import { useCallback } from 'react';
 
 
 function AddUser() {
-
+    let traj = true
     const [name, setName] = useState('')
     const [password, setPassword] = useState('')
     const [email, setEmail] = useState('')
@@ -49,28 +49,20 @@ function AddUser() {
 
     async function addUserHandler(event){
         event.preventDefault();
-        
-        const res = await fetch('https://login-92625-default-rtdb.firebaseio.com/logowanie.json', 
-          {
-            method:'POST',
-            body: JSON.stringify({imie:name, haslo:password, email:email, wiek:age}),
-            headers:{
-              'Content-type':'aplication/json'
-            }
-          }
-        )
 
         if(+age < 1){
             setErrorModal({
                 title:"Błędny wiek",
                 msg:"Wiek musi być > 0"
             })
+            traj = false
         }
         else if(name.length <=2){
           setErrorModal({
             title:"Błędna nazwa",
             msg:"Musi być więcej niż 2 znaki!"
         })
+        traj = false
         }
           
         else if (password.length <=8){
@@ -78,12 +70,44 @@ function AddUser() {
             title:"Błędne hasło",
             msg:"Hasło powinno mieć przynajmniej 9 znaków!"
         })
+        traj = false
         }
 
-        setAge('');
-        setName('');
-        setPassword('');
-        setEmail('');
+        if (!(password.match(/[0-9]/))){
+          setErrorModal({
+            title:"Błędne hasło",
+            msg:"Hasło powinno mieć przynajmniej jedną cyfrę!"
+        })
+        traj = false
+        }
+
+        if (!(password.match(/[A-Z]/))){
+          setErrorModal({
+            title:"Błędne hasło",
+            msg:"Hasło powinno zawierać dużą literę!"
+        })
+        traj = false
+        }
+
+        if (traj != false){
+          const res = await fetch('https://login-92625-default-rtdb.firebaseio.com/logowanie.json', 
+            {
+              method:'POST',
+              body: JSON.stringify({imie:name, haslo:password, email:email, wiek:age}),
+              headers:{
+                'Content-type':'aplication/json'
+              }
+            }
+          )
+          }
+
+        if (traj != false){
+          setAge('');
+          setName('');
+          setPassword('');
+          setEmail('');
+        }
+        traj = true
     }
    const errorHandler = () => {
     setErrorModal(null);
@@ -95,7 +119,8 @@ function AddUser() {
                                    msg={errorModal.msg}
                                    removeError={errorHandler}/> }
         <Card className={classes.input}>
-        <form onSubmit={addUserHandler} >
+          <main>
+          <form onSubmit={addUserHandler} >
             <label htmlFor="username">Username</label>
             <input id="username" type="text"
                    onChange={namedChangeHandler} 
@@ -121,6 +146,7 @@ function AddUser() {
             <Button myType="submit"> Add user </Button>
         </form>
         <div className={classes.left}>oijsofi</div>
+          </main>
         </Card>
         </>
     );
