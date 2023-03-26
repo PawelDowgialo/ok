@@ -1,19 +1,18 @@
-import React, { useState} from 'react'; 
+import React, { useState, useEffect} from 'react'; 
 import Card from '../UI/Card';
 import classes from './AddUser.module.css' ;
 import Button from '../UI/Button';
 import ErrorModal from '../UI/ErrorModal' ;
-import { useEffect } from 'react';
 import { useCallback } from 'react';
 
 
 function AddUser() {
-    let traj = true
     const [name, setName] = useState('')
     const [password, setPassword] = useState('')
     const [email, setEmail] = useState('')
     const [age, setAge] = useState('')
     const [errorModal, setErrorModal] = useState(null)
+    const [loadedData, setLoadedData] = useState([]);
 
     function namedChangeHandler(event){
         setName(event.target.value)
@@ -29,85 +28,83 @@ function AddUser() {
         console.log(age)
     }
 
-    const getDataHandler = useCallback(async()=>{
-      const res = await fetch('https://login-92625-default-rtdb.firebaseio.com/pierwszekroki.json')
-      const data = await res.json()
-      
-      const loadedData = []
-      for (const key in data){
-          loadedData.push({
-          moj: data[key]
-        })
+    const getDataHandler = async () => {
+      const res = await fetch('https://loginapp-5a2b5-default-rtdb.firebaseio.com/.json');
+      const data = await res.json();
+      const loadedData = [];
+      for (const key in data.logowanie) {
+        loadedData.push({
+          name: data.logowanie[key].imie,
+          password: data.logowanie[key].haslo,
+          email: data.logowanie[key].email,
+          age: data.logowanie[key].wiek,
+        });
       }
-      console.log(loadedData)
-    })
+      setLoadedData(loadedData);
+    };
   
-    useEffect(()=>{
-      getDataHandler()
-    }, [])
+    useEffect(() => {
+      getDataHandler();
+    }, []);
 
-
-    async function addUserHandler(event){
-        event.preventDefault();
-
-        if(+age < 1){
-            setErrorModal({
-                title:"Błędny wiek",
-                msg:"Wiek musi być > 0"
-            })
-            traj = false
-        }
-        else if(name.length <=2){
-          setErrorModal({
-            title:"Błędna nazwa",
-            msg:"Musi być więcej niż 2 znaki!"
-        })
-        traj = false
-        }
-          
-        else if (password.length <=8){
-          setErrorModal({
-            title:"Błędne hasło",
-            msg:"Hasło powinno mieć przynajmniej 9 znaków!"
-        })
-        traj = false
-        }
-
-        if (!(password.match(/[0-9]/))){
-          setErrorModal({
-            title:"Błędne hasło",
-            msg:"Hasło powinno mieć przynajmniej jedną cyfrę!"
-        })
-        traj = false
-        }
-
-        if (!(password.match(/[A-Z]/))){
-          setErrorModal({
-            title:"Błędne hasło",
-            msg:"Hasło powinno zawierać dużą literę!"
-        })
-        traj = false
-        }
-
-        if (traj != false){
-          const res = await fetch('https://login-92625-default-rtdb.firebaseio.com/logowanie.json', 
-            {
-              method:'POST',
-              body: JSON.stringify({imie:name, haslo:password, email:email, wiek:age}),
-              headers:{
-                'Content-type':'aplication/json'
-              }
-            }
-          )
+    async function addUserHandler(event) {
+      event.preventDefault();
+    
+      let isValid = true;
+    
+      if (+age < 1) {
+        setErrorModal({
+          title: "Błędny wiek",
+          msg: "Wiek musi być > 0"
+        });
+        isValid = false;
+      } else if (name.length <= 2) {
+        setErrorModal({
+          title: "Błędna nazwa",
+          msg: "Musi być więcej niż 2 znaki!"
+        });
+        isValid = false;
+      } else if (password.length <= 8) {
+        setErrorModal({
+          title: "Błędne hasło",
+          msg: "Hasło powinno mieć przynajmniej 9 znaków!"
+        });
+        isValid = false;
+      } else if (!password.match(/[0-9]/)) {
+        setErrorModal({
+          title: "Błędne hasło",
+          msg: "Hasło powinno mieć przynajmniej jedną cyfrę!"
+        });
+        isValid = false;
+      } else if (!password.match(/[A-Z]/)) {
+        setErrorModal({
+          title: "Błędne hasło",
+          msg: "Hasło powinno zawierać dużą literę!"
+        });
+        isValid = false;
+      }
+    
+      if (isValid) {
+        const res = await fetch('https://loginapp-5a2b5-default-rtdb.firebaseio.com/logowanie.json', {
+          method: 'POST',
+          body: JSON.stringify({
+            imie: name,
+            haslo: password,
+            email: email,
+            wiek: age
+          }),
+          headers: {
+            'Content-type': 'aplication/json'
           }
+        });
+        
+        setAge('');
+        setName('');
+        setPassword('');
+        setEmail('');
 
-        if (traj != false){
-          setAge('');
-          setName('');
-          setPassword('');
-          setEmail('');
-        }
-        traj = true
+        getDataHandler();
+      }
     }
    const errorHandler = () => {
     setErrorModal(null);
@@ -145,7 +142,11 @@ function AddUser() {
 
             <Button myType="submit"> Add user </Button>
         </form>
-        <div className={classes.left}>oijsofi</div>
+        <div className={classes.left}>
+          {loadedData.map((data, index) => (
+            <p key={index} onClick={(event) => { event.target.style.display = 'none' }}>Witaj {data.name}!</p>
+          ))}
+        </div>
           </main>
         </Card>
         </>

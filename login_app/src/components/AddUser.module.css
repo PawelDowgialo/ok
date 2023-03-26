@@ -21,7 +21,18 @@
 
 .left{
     width: 100%;
-    background-color: red;
+    text-align: center;
+    padding: 10px;
+    margin: 10px;
+    color: white;
+}
+
+.left p{
+    border: 1px solid black;
+    border-radius: 5px;
+    height: 40px;
+    background-color: #000000;
+    line-height: 40px;
 }
 
 main{
