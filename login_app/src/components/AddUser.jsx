@@ -61,7 +61,7 @@ function AddUser() {
       } else if (name.length <= 2 || name.length >= 15) {
         setErrorModal({
           title: "Błędna nazwa",
-          msg: "Musi być więcej niż 2 znaki, ale mniej niż 11!"
+          msg: "Musi być więcej niż 2 znaki, ale mniej niż 15!"
         });
         isValid = false;
       } else if (password.length <= 8) {
@@ -144,7 +144,25 @@ function AddUser() {
         </form>
         <div className={classes.left}>
           {loadedData.map((data, index) => (
-            <p key={index} onClick={(event) => { event.target.style.display = 'none' }}>Witaj na pokładzie {data.name} !</p>
+            <p 
+              style={{cursor: 'pointer'}} 
+              key={index} 
+              onClick={(event) => { event.target.style.display = 'none' }}>
+
+              <span style={{fontSize: '40px', float: 'left', marginLeft: '15px', color: 'darkred', fontWeight: '900'}}>
+                !
+              </span>
+
+              Witaj na pokładzie
+              
+              <span style={{ color: '#ddd', fontWeight: '500', fontStyle: 'italic', fontSize: '22px' }}>
+              &nbsp;{data.name} !
+                  <br/>
+              </span> 
+                Twoje hasło to: {data.password}<br/>
+                Twój email to: {data.email}<br/>
+                Twój wiek to: {data.age} lat świetlnych
+            </p>
           ))}
         </div>
           </main>

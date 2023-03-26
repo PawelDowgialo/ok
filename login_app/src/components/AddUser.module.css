@@ -30,9 +30,10 @@
 .left p{
     border: 1px solid black;
     border-radius: 5px;
-    height: 40px;
+    height: auto;
     background-color: #000000;
     line-height: 40px;
+    font-size: 18px;
 }
 
 main{
